@@ -1,0 +1,114 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>My Apps</title>
+    <style>
+    /* The Container */
+    html, body {
+        margin: 0;
+        padding: 0;
+        height: 100%;
+    }
+
+    body {
+        display: flex;
+        flex-direction: column; 
+        min-height: 100vh;
+    }
+
+    .img-background {
+        background-image: url('');
+        background-size: cover; 
+        background-position: center;
+        background-repeat: no-repeat;
+        
+        flex-grow: 1; 
+        
+        display: flex;
+        flex-direction: column; 
+        justify-content: flex-start; 
+        align-items: center;
+        font-family: system-ui, sans-serif;
+        text-align: center; 
+        padding: 20px;
+    }
+
+    .image-button-grid {
+        display: grid;
+        /* FIXED: Changed from minmax(150px, 1fr) to exactly 150px */
+        grid-template-columns: repeat(auto-fill, 150px); 
+        /* OPTIONAL: Centers the grid items on the screen */
+        justify-content: center; 
+        gap: 16px; 
+        padding: 16px;
+        width: 100%;
+        max-width: 1200px; 
+        box-sizing: border-box;
+    }
+
+    /* The Buttons */
+    .grid-button {
+        /* FIXED: Added display block, width, and height to force the 150px square */
+        display: block;
+        width: 150px;
+        height: 150px;
+        background: none;
+        border: 2px solid transparent;
+        border-radius: 8px;
+        padding: 0;
+        cursor: pointer;
+        overflow: hidden;
+        transition: transform 0.2s, border-color 0.2s;
+    }
+
+    /* Make sure the image fills the button neatly */
+    .grid-button img {
+        width: 100%;
+        height: 100%;
+        object-fit: cover; 
+        display: block;
+    }
+
+    /* Hover and Focus States */
+    .grid-button:hover {
+        transform: scale(1.05); 
+    }
+
+    .grid-button:focus {
+        outline: none;
+        border-color: #007bff; 
+    }
+
+    footer {
+        background-color: #f1f5f9;
+        padding: 1rem;
+        text-align: right;
+    }
+
+    .footer-text {
+        font-family: system-ui, sans-serif;
+        font-size: 0.875rem;
+        color: #334155;
+        margin: 0;
+    }
+    </style>
+</head>
+<body>
+
+    <main class="img-background">
+        <h1>My Apps</h1>
+        <p>Welcome to my apps page!</p>
+
+        <div class="image-button-grid">
+            <a class="grid-button" href="MashupMadness/MashupMadness.html"><img src="Icons/Untitled.png" alt="Mashup"></a>
+        </div>
+    </main>
+
+    <footer>
+        <p class="footer-text">&copy; 2026 Daylen Rivas Owen. All rights reserved.</p>
+    </footer>
+
+</body>
+</html>
