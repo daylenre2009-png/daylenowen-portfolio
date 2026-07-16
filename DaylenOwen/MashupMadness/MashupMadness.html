@@ -4,6 +4,7 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Interactive Boardgame Companion</title>
+  <script src="https://unpkg.com/mqtt/dist/mqtt.min.js"></script>
   <style>
     :root {
       --color-bg: #1a1a1e;
@@ -282,8 +283,6 @@
     .btn-end-turn:disabled { opacity: 0.4; cursor: not-allowed; }
 
     /* Game Over Layout */
-    /* Game Over Layout structures */
-    /* Game Over Layout structures */
     .game-over-view {
       position: absolute;
       top: 50%;
@@ -668,8 +667,44 @@
       }
     }
 
-    // Cross-tab safe synchronization portal setup
-    const networkSyncChannel = new BroadcastChannel('local_boardgame_sync_channel');
+    /* --- GLOBALLY RESOLVED NETWORKING LAYER (REPLACES LOCAL BROADCASTCHANNEL) --- */
+    // Connect to a public, free MQTT WebSocket Broker (works over standard port 8084 over SSL)
+    const mqttClient = mqtt.connect('wss://broker.emqx.io:8084/mqtt');
+    let currentMqttTopic = null;
+
+    mqttClient.on('connect', () => {
+      console.log('Successfully connected to the global matchmaking sync network!');
+      if (activeRoomCode) {
+        joinRoomTopic(activeRoomCode);
+      }
+    });
+
+    mqttClient.on('message', (topic, payload) => {
+      try {
+        const msg = JSON.parse(payload.toString());
+        // Ignore echo messages broadcast by our own device
+        if (msg.senderId === localPlayerId) return;
+
+        handleIncomingNetworkMessage(msg);
+      } catch (e) {
+        console.error("Error decoding message:", e);
+      }
+    });
+
+    function joinRoomTopic(roomCode) {
+      if (currentMqttTopic) {
+        mqttClient.unsubscribe(currentMqttTopic);
+      }
+      currentMqttTopic = `mashup_madness_room_${roomCode}`;
+      mqttClient.subscribe(currentMqttTopic);
+      console.log(`Subscribed to global room channel: ${currentMqttTopic}`);
+    }
+
+    function sendNetworkMessage(msg) {
+      if (!activeRoomCode || !currentMqttTopic) return;
+      msg.senderId = localPlayerId; // Attach sender footprint 
+      mqttClient.publish(currentMqttTopic, JSON.stringify(msg));
+    }
 
     // Audio Elements Setup
     const flipSound = new Audio('assets/sounds/flip.mp3');
@@ -909,7 +944,7 @@
       turnCardFlipsDone = 0;
       Object.keys(turnSpinnerSpins).forEach(k => turnSpinnerSpins[k] = 0);
 
-      networkSyncChannel.postMessage({
+      sendNetworkMessage({
         type: 'TURN_CHANGE',
         roomCode: activeRoomCode,
         nextTurnOwner: nextPlayer
@@ -956,7 +991,7 @@
       }, 50);
     }
 
-    /* --- Cross-Tab Networking Synchronization Handlers --- */
+    /* --- Cross-Tab/Device Networking Synchronization Handlers --- */
     function openRoomPopup() {
       renderRoomModalUI();
       document.getElementById('roomPopup').classList.add('active');
@@ -1029,10 +1064,11 @@
       totalPlayers = 1;
       
       saveRoomState();
+      joinRoomTopic(activeRoomCode); // Register onto global MQTT relay channel
       renderRoomModalUI();
       evaluateTurnControls();
       
-      networkSyncChannel.postMessage({
+      sendNetworkMessage({
         type: 'ROOM_CREATED',
         roomCode: activeRoomCode,
         hostId: localPlayerId,
@@ -1047,21 +1083,29 @@
       activeRoomCode = input;
       isHost = false;
       saveRoomState();
+      joinRoomTopic(activeRoomCode); // Connect to topic channel before dispatching connection handshake
       
-      networkSyncChannel.postMessage({
-        type: 'REQUEST_JOIN',
-        roomCode: activeRoomCode,
-        playerId: localPlayerId
-      });
+      setTimeout(() => {
+        sendNetworkMessage({
+          type: 'REQUEST_JOIN',
+          roomCode: activeRoomCode,
+          playerId: localPlayerId
+        });
+      }, 250);
     }
 
     function networkLeaveRoom() {
-      networkSyncChannel.postMessage({
+      sendNetworkMessage({
         type: 'PLAYER_LEAVING',
         roomCode: activeRoomCode,
         playerId: localPlayerId
       });
       
+      if (currentMqttTopic) {
+        mqttClient.unsubscribe(currentMqttTopic);
+        currentMqttTopic = null;
+      }
+
       activeRoomCode = null;
       isHost = false;
       roomPlayersList = [];
@@ -1078,7 +1122,7 @@
 
     function broadcastGameState() {
       if(!activeRoomCode) return;
-      networkSyncChannel.postMessage({
+      sendNetworkMessage({
         type: 'GAME_STATE_UPDATE',
         roomCode: activeRoomCode,
         round: currentRoundNum,
@@ -1095,15 +1139,13 @@
 
     function broadcastGameOver() {
       if(!activeRoomCode) return;
-      networkSyncChannel.postMessage({
+      sendNetworkMessage({
         type: 'GAME_OVER',
         roomCode: activeRoomCode
       });
     }
 
-    networkSyncChannel.onmessage = (event) => {
-      const msg = event.data;
-      
+    function handleIncomingNetworkMessage(msg) {
       if (msg.type === 'REQUEST_JOIN' && isHost && msg.roomCode === activeRoomCode) {
         if (!roomPlayersList.includes(msg.playerId)) {
           roomPlayersList.push(msg.playerId);
@@ -1113,7 +1155,7 @@
         renderRoomModalUI();
         
         // Share current list, owner, AND the host's current gameplay settings
-        networkSyncChannel.postMessage({
+        sendNetworkMessage({
           type: 'ROOM_SYNC',
           roomCode: activeRoomCode,
           players: roomPlayersList,
@@ -1201,7 +1243,7 @@
       if (msg.type === 'GAME_OVER' && msg.roomCode === activeRoomCode) {
         showGameOverScreen();
       }
-    };
+    }
 
     function showGameOverScreen() {
       const container = document.getElementById('viewContainer');
@@ -1271,7 +1313,7 @@
 
       // Broadcast changes to active lobby peers immediately
       if (activeRoomCode && isHost) {
-        networkSyncChannel.postMessage({
+        sendNetworkMessage({
           type: 'SETTINGS_UPDATE',
           roomCode: activeRoomCode,
           flipsTargetLimit: flipsTargetLimit,
