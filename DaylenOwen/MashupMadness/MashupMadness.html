@@ -668,7 +668,6 @@
     }
 
     /* --- GLOBALLY RESOLVED NETWORKING LAYER (REPLACES LOCAL BROADCASTCHANNEL) --- */
-    // Connect to a public, free MQTT WebSocket Broker (works over standard port 8084 over SSL)
     const mqttClient = mqtt.connect('wss://broker.emqx.io:8084/mqtt');
     let currentMqttTopic = null;
 
@@ -804,10 +803,8 @@
             const padding = 24; // Safety margin for boundaries
             const maxWidth = w - padding;
 
-            // Set dynamic canvas font context first for exact boundary calculation
             ctx.font = isCurrentSelected ? `bold 16px Roboto` : `13px Roboto`;
 
-            // Measure string boundary recursively to append an ellipsis if canvas is too narrow
             if (ctx.measureText(displayString).width > maxWidth) {
               while (displayString.length > 0 && ctx.measureText(displayString + "...").width > maxWidth) {
                 displayString = displayString.slice(0, -1);
@@ -825,13 +822,26 @@
         ctx.strokeRect(4, cy - boxHalfH, w - 8, boxHalfH * 2);
       }
 
-      spin() {
+      spin(customSpeed = null) {
         if (this.isSpinning || !gameDataPools[this.type].length) return;
         this.isSpinning = true;
-        this.speed = Math.random() * 20 + 30; 
+
+        // Use custom speed if passed from network trigger; otherwise generate random
+        this.speed = customSpeed !== null ? customSpeed : (Math.random() * 20 + 30); 
 
         spinSound.currentTime = 0;
         spinSound.play().catch(e => console.log(e));
+
+        // If local turn-owner initiated a public spin, broadcast it immediately to others
+        if (customSpeed === null && activeRoomCode && this.type !== 'words' && this.type !== 'actions') {
+          sendNetworkMessage({
+            type: 'SPIN_TRIGGER',
+            roomCode: activeRoomCode,
+            spinnerType: this.type,
+            speed: this.speed,
+            initialOffset: this.yOffset
+          });
+        }
 
         this.animate();
       }
@@ -841,7 +851,7 @@
           this.yOffset += this.speed;
           this.speed *= 0.965; 
           this.redraw();
-          broadcastGameState(); 
+          // REMOVED high-frequency broadcastGameState() here to avoid network lag
           requestAnimationFrame(() => this.animate());
         } else {
           const remainder = this.yOffset % this.rowHeight;
@@ -864,7 +874,10 @@
             document.getElementById('outputLabel').innerText = `${this.type.toUpperCase()}: ${this.winningValue}`;
           }
 
-          broadcastGameState();
+          // Broadcast the final synced game state once the spin animation completes
+          if (checkMyTurn()) {
+            broadcastGameState();
+          }
         }
       }
     }
@@ -960,8 +973,8 @@
       document.getElementById('endTurnBtn').disabled = !isMyTurn;
       
       if (activeRoomCode) {
-        totalPlayers = roomPlayersList.length; // Ensure dynamic count sync
-        document.getElementById('settingsBtn').disabled = !isHost; // Host-only restriction
+        totalPlayers = roomPlayersList.length; 
+        document.getElementById('settingsBtn').disabled = !isHost; 
 
         document.getElementById('outputLabel').innerText = isMyTurn ? 
           "It's YOUR turn! Perform your actions and hit End Turn." : 
@@ -972,8 +985,6 @@
         document.getElementById('outputLabel').innerText = "Join or create a room to begin turn rotations!";
       }
 
-      // --- CRITICAL CONNECTION TO TELESTRATIONS ---
-      // Sync the real-time player count so Telestrations loads with it seamlessly
       localStorage.setItem('globalPlayersCount', totalPlayers);
 
       const wrapperWords = document.getElementById('wrapper-words');
@@ -1064,7 +1075,7 @@
       totalPlayers = 1;
       
       saveRoomState();
-      joinRoomTopic(activeRoomCode); // Register onto global MQTT relay channel
+      joinRoomTopic(activeRoomCode); 
       renderRoomModalUI();
       evaluateTurnControls();
       
@@ -1083,7 +1094,7 @@
       activeRoomCode = input;
       isHost = false;
       saveRoomState();
-      joinRoomTopic(activeRoomCode); // Connect to topic channel before dispatching connection handshake
+      joinRoomTopic(activeRoomCode); 
       
       setTimeout(() => {
         sendNetworkMessage({
@@ -1154,7 +1165,6 @@
         saveRoomState();
         renderRoomModalUI();
         
-        // Share current list, owner, AND the host's current gameplay settings
         sendNetworkMessage({
           type: 'ROOM_SYNC',
           roomCode: activeRoomCode,
@@ -1171,7 +1181,6 @@
         currentTurnOwnerId = msg.currentTurnOwner;
         totalPlayers = roomPlayersList.length;
         
-        // Synchronize initial game rules from host
         if (msg.flipsTargetLimit !== undefined) flipsTargetLimit = msg.flipsTargetLimit;
         if (msg.gameDataPools) {
           gameDataPools = msg.gameDataPools;
@@ -1191,6 +1200,15 @@
         evaluateTurnControls();
       }
 
+      // Handle the trigger to spin local canvases when another player initiates a spin
+      if (msg.type === 'SPIN_TRIGGER' && msg.roomCode === activeRoomCode) {
+        const targetSpinner = spinners[msg.spinnerType];
+        if (targetSpinner) {
+          targetSpinner.yOffset = msg.initialOffset; // Sync base position
+          targetSpinner.spin(msg.speed);             // Kick off animation with synchronized velocity
+        }
+      }
+
       if (msg.type === 'GAME_STATE_UPDATE' && msg.roomCode === activeRoomCode) {
         currentRoundNum = msg.round;
         cardFlipsCount = msg.flips;
@@ -1201,22 +1219,21 @@
         spinners.letters.winningValue = msg.lettersValue;
         spinners.vowels.winningValue = msg.vowelsValue;
 
-        if (msg.categoriesOffset !== undefined) spinners.categories.yOffset = msg.categoriesOffset;
-        if (msg.lettersOffset !== undefined) spinners.letters.yOffset = msg.lettersOffset;
-        if (msg.vowelsOffset !== undefined) spinners.vowels.yOffset = msg.vowelsOffset;
+        // Only enforce exact static offsets if the spinners are not already in their animation routines
+        if (!spinners.categories.isSpinning && msg.categoriesOffset !== undefined) spinners.categories.yOffset = msg.categoriesOffset;
+        if (!spinners.letters.isSpinning && msg.lettersOffset !== undefined) spinners.letters.yOffset = msg.lettersOffset;
+        if (!spinners.vowels.isSpinning && msg.vowelsOffset !== undefined) spinners.vowels.yOffset = msg.vowelsOffset;
 
         spinners.categories.redraw();
         spinners.letters.redraw();
         spinners.vowels.redraw();
       }
 
-      // Handle real-time setting updates broadcasted from host
       if (msg.type === 'SETTINGS_UPDATE' && msg.roomCode === activeRoomCode) {
         flipsTargetLimit = msg.flipsTargetLimit;
         gameDataPools = msg.gameDataPools;
         localStorage.setItem('shared_game_data_pools', JSON.stringify(gameDataPools));
 
-        // Redraw current visual components to immediately match new pools
         Object.keys(spinners).forEach(k => {
           if (spinners[k]) {
             spinners[k].yOffset = 0;
@@ -1298,7 +1315,6 @@
       gameDataPools.vowels = parseLines('input-vowels');
       gameDataPools.chameleon = parseLines('input-chameleon'); 
 
-      // Save the synchronized configurations pool for cross-page lookup access
       localStorage.setItem('shared_game_data_pools', JSON.stringify(gameDataPools));
 
       Object.keys(spinners).forEach(k => {
@@ -1311,7 +1327,6 @@
       document.getElementById('roundHeader').innerText = `Round ${currentRoundNum}: ${roundDescriptions[currentRoundNum] || 'Game Playing'}`;
       closePromptEditor();
 
-      // Broadcast changes to active lobby peers immediately
       if (activeRoomCode && isHost) {
         sendNetworkMessage({
           type: 'SETTINGS_UPDATE',
@@ -1324,11 +1339,9 @@
       broadcastGameState();
     }
 
-    // Seed initial data on first load
     if(!localStorage.getItem('shared_game_data_pools')) {
       localStorage.setItem('shared_game_data_pools', JSON.stringify(gameDataPools));
     } else {
-      // Pull configurations from localStorage if they exist (allows clients/reloads to keep modifications)
       try {
         gameDataPools = JSON.parse(localStorage.getItem('shared_game_data_pools'));
       } catch (e) {
@@ -1336,7 +1349,6 @@
       }
     }
 
-    // Initial configuration check setup
     evaluateTurnControls();
   </script>
 </body>
