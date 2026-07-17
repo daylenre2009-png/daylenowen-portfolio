@@ -677,7 +677,7 @@
       color: #ffffff;
       border: 1px solid var(--color-border);
       border-radius: 4px;
-      padding: 6px;
+      padding: 4px;
       font-size: 12px;
     }
 
@@ -888,6 +888,10 @@
             <button class="btn-timer" style="height: 24px; width: 100%; margin-top: 2px;" onclick="addBulkWords()">Add Words</button>
           </div>
         </div>
+
+        <div class="btn-bar">
+          <button class="btn-reset" onclick="resetChameleonToDefault()">Reset Defaults</button>
+        </div>
       </div>
 
       <div class="btn-bar" style="border-top: 1px solid var(--color-border); padding-top: 10px; margin-top: 5px;">
@@ -957,15 +961,6 @@
         sessionStorage.removeItem('room_isHost');
         sessionStorage.removeItem('room_playersList');
         sessionStorage.removeItem('room_currentTurnOwnerId');
-      }
-    }
-
-    // Update locally entered Player ID
-    function updateLocalPlayerId(newName) {
-      const cleanName = newName.trim();
-      if (cleanName) {
-        localPlayerId = cleanName;
-        sessionStorage.setItem('room_localPlayerId', localPlayerId);
       }
     }
 
@@ -1419,10 +1414,7 @@
       if (!activeRoomCode) {
         container.innerHTML = `
           <div class="popup-header">Multiplayer Room Management</div>
-          <div class="form-group" style="margin-bottom:12px;">
-            <label style="text-align:center; font-size:12px; color:var(--color-text-dim);">Your Name / Player ID:</label>
-            <input type="text" id="playerNameSetupInput" class="settings-input" style="text-align:center; font-weight:bold; font-size:14px;" value="${localPlayerId}" oninput="updateLocalPlayerId(this.value)">
-          </div>
+          <p style="font-size:12px; color:var(--color-text-dim); text-align:center;">Your ID: <b>${localPlayerId}</b></p>
           <div class="btn-bar" style="margin-top:10px;">
             <button class="btn-save" onclick="networkCreateRoom()">Create Room</button>
             <button class="btn-save" style="background-color:var(--color-accent-purple);" onclick="renderJoinInputUI()">Join Room</button>
@@ -1838,6 +1830,56 @@
         document.getElementById('input-categories').value = DEFAULT_GAME_DATA_POOLS.categories.join('\n');
         document.getElementById('input-letters').value = DEFAULT_GAME_DATA_POOLS.letters.join('\n');
         document.getElementById('input-vowels').value = DEFAULT_GAME_DATA_POOLS.vowels.join('\n');
+      }
+    }
+
+    function resetChameleonToDefault() {
+      if (confirm("Restore Chameleon settings to defaults? (Click 'Save Changes' to permanently apply)")) {
+        chameleonWordBank = {
+          "Animals": [
+              "Lion", "Elephant", "Shark", "Penguin", "Kangaroo", "Chameleon", "Eagle", "Dolphin", "Bear", "Snake",
+              "Frog", "Giraffe", "Monkey", "Wolf", "Octopus", "Horse", "Tiger", "Owl", "Fox", "Crocodile"
+          ],
+          "Food & Drink": [
+              "Pizza", "Burger", "Sushi", "Taco", "Ice Cream", "Coffee", "Chocolate", "Cheese", "Pasta", "Apple",
+              "Bacon", "Salad", "Pancake", "Donut", "Steak", "Popcorn", "Smoothie", "Soup", "Fries", "Watermelon"
+          ],
+          "Occupations": [
+              "Doctor", "Firefighter", "Astronaut", "Teacher", "Chef", "Detective", "Artist", "Pilot", "Scientist", "Farmer",
+              "Lawyer", "Actor", "Musician", "Vet", "Builder", "Nurse", "Photographer", "Journalist", "Coach", "Mechanic"
+          ],
+          "Places & Destinations": [
+              "Beach", "School", "Hospital", "Airport", "Library", "Gym", "Museum", "Cinema", "Hotel", "Park",
+              "Zoo", "Castle", "Space Station", "Mall", "Restaurant", "Concert", "Desert", "Island", "Mountain", "Supermarket"
+          ],
+          "Clothing & Fashion": [
+              "T-shirt", "Jeans", "Jacket", "Dress", "Sneakers", "Boots", "Hat", "Sunglasses", "Socks", "Scarf",
+              "Gloves", "Suit", "Hoodie", "Watch", "Backpack", "Belt", "Sweater", "Swimsuit", "Ring", "Tie"
+          ],
+          "Hobbies & Sports": [
+              "Soccer", "Basketball", "Video Games", "Reading", "Cooking", "Drawing", "Swimming", "Hiking", "Photography", "Dancing",
+              "Gardening", "Chess", "Skateboarding", "Camping", "Fishing", "Running", "Yoga", "Tennis", "Cycling", "Painting"
+          ],
+          "Household Objects": [
+              "Couch", "Refrigerator", "Television", "Lamp", "Clock", "Mirror", "Toaster", "Bed", "Pillow", "Towel",
+              "Key", "Blender", "Broom", "Laptop", "Umbrella", "Desk", "Chair", "Fan", "Curtain", "Plant"
+          ],
+          "Transport & Vehicles": [
+              "Car", "Airplane", "Bicycle", "Train", "Boat", "Helicopter", "Submarine", "Motorcycle", "Bus", "Rocket",
+              "Scooter", "Truck", "Tractor", "Skateboard", "Ambulance", "Taxi", "Ferry", "Hot Air Balloon", "Jet Ski", "Spaceship"
+          ],
+          "Pop Culture & Media": [
+              "Star Wars", "Marvel", "Harry Potter", "Pokémon", "Minecraft", "Batman", "Shrek", "Frozen", "Titanic", "Jurassic Park",
+              "Disney", "Barbie", "Netflix", "YouTube", "Anime", "Spider-Man", "Mario", "LEGO", "Fortnite", "Avatar"
+          ],
+          "Weather & Nature": [
+              "Sunshine", "Rain", "Snow", "Thunderstorm", "Rainbow", "Volcano", "Waterfall", "Tornado", "Fog", "Earthquake",
+              "Blizzard", "Hurricane", "River", "Forest", "Cave", "Cloud", "Wind", "Lightning", "Wave", "Eclipse"
+          ]
+      };
+        chameleonSelectedCategory = "Animals";
+        chameleonTimerDuration = 180;
+        updateChameleonUI();
       }
     }
 
