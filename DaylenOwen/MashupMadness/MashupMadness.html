@@ -964,6 +964,15 @@
       }
     }
 
+    // Interactive updates to local username
+    function updateLocalUsername(val) {
+      const clean = val.trim();
+      if (clean) {
+        localPlayerId = clean;
+        sessionStorage.setItem('room_localPlayerId', localPlayerId);
+      }
+    }
+
     /* --- GLOBALLY RESOLVED NETWORKING LAYER (REPLACES LOCAL BROADCASTCHANNEL) --- */
     const mqttClient = mqtt.connect('wss://broker.emqx.io:8084/mqtt');
     let currentMqttTopic = null;
@@ -1414,7 +1423,10 @@
       if (!activeRoomCode) {
         container.innerHTML = `
           <div class="popup-header">Multiplayer Room Management</div>
-          <p style="font-size:12px; color:var(--color-text-dim); text-align:center;">Your ID: <b>${localPlayerId}</b></p>
+          <div class="form-group" style="margin-bottom: 12px;">
+            <label style="color: var(--color-accent-blue)">Your Username:</label>
+            <input type="text" id="usernameInput" value="${localPlayerId}" placeholder="Enter username..." style="text-align:center;" oninput="updateLocalUsername(this.value)">
+          </div>
           <div class="btn-bar" style="margin-top:10px;">
             <button class="btn-save" onclick="networkCreateRoom()">Create Room</button>
             <button class="btn-save" style="background-color:var(--color-accent-purple);" onclick="renderJoinInputUI()">Join Room</button>
