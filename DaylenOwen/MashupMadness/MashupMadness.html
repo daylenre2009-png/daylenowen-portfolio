@@ -15,7 +15,10 @@
       --color-accent-purple: #a855f7;
       --color-accent-orange: #f97316;
       --color-button-bg: #2e3056;
-      --color-text-dim: #9ca3af;
+      --color-text-dim: var(--text-color-2);
+      --color-danger: #662626;
+      --color-danger-hover: #8c3535;
+      --color-input-bg: #141417;
     }
 
     * {
@@ -164,7 +167,7 @@
       justify-content: center;
       gap: 4px;
       min-height: 0;
-      flex: 1 1 auto; /* Allows panel to shrink or expand dynamically */
+      flex: 1 1 auto;
     }
 
     .round-header {
@@ -176,11 +179,10 @@
       letter-spacing: 1px;
     }
 
-    /* Smart Scale Card anchor: Scales directly to whatever is smaller—height or width */
     .card-anchor {
       width: auto;
       height: 100%;
-      max-height: clamp(150px, 35vh, 380px); /* Strict upper limits depending on vertical room */
+      max-height: clamp(150px, 35vh, 380px);
       aspect-ratio: 280 / 380;
       display: flex;
       justify-content: center;
@@ -204,7 +206,7 @@
       gap: clamp(4px, 1vh, 8px);
       justify-content: center;
       width: 100%;
-      max-width: 480px; /* Limits landscape blowout width */
+      max-width: 480px;
       min-height: 0;
       flex: 1 1 auto;
     }
@@ -293,9 +295,9 @@
       justify-content: center;
       align-items: center;
       gap: 12px;
-      z-index: 10; /* Ensures it sits on top of everything else */
+      z-index: 10;
       text-align: center;
-      width: 90%; /* Keeps text from touching edges on small screens */
+      width: 90%;
       max-width: 400px;
     }
 
@@ -344,11 +346,11 @@
     .popup-content {
       background-color: var(--color-bg);
       border: 1px solid var(--color-border);
-      width: 90%;
-      max-width: 400px;
-      max-height: 85vh;
+      width: 95%;
+      max-width: 480px;
+      max-height: 90vh;
       border-radius: 8px;
-      padding: 12px;
+      padding: 15px;
       display: flex;
       flex-direction: column;
       gap: 8px;
@@ -359,6 +361,7 @@
       font-size: 15px;
       font-weight: bold;
       text-align: center;
+      margin-bottom: 5px;
     }
 
     .form-group {
@@ -461,6 +464,240 @@
     .player-entry:last-child { border-bottom: none; }
 
     /* ==========================================================================
+      SETTINGS TABS SYSTEM & INTEGRATED CHAMELEON LAYOUT
+      ========================================================================= */
+    .tabs-container {
+      display: flex;
+      border-bottom: 2px solid var(--color-border);
+      margin-bottom: 10px;
+      width: 100%;
+    }
+
+    .tab-btn {
+      flex: 1;
+      background: none !important;
+      border: none;
+      border-bottom: 3px solid transparent;
+      color: var(--color-text-dim);
+      padding: 8px;
+      font-size: 14px;
+      font-weight: bold;
+      cursor: pointer;
+      border-radius: 0 !important;
+      text-align: center;
+      transition: all 0.2s ease;
+    }
+
+    .tab-btn:hover {
+      color: #ffffff;
+      background: rgba(255, 255, 255, 0.05) !important;
+    }
+
+    .tab-btn.active {
+      color: #ffffff;
+      border-bottom-color: var(--color-accent-blue);
+    }
+
+    .tab-content {
+      display: none;
+      width: 100%;
+    }
+
+    .tab-content.active {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    /* Chameleon Specific Panels */
+    .timer-card {
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      padding: 10px;
+      display: flex;
+      flex-direction: column;
+      justify-content: space-between;
+      align-items: center;
+      gap: 6px;
+      background-color: var(--color-input-bg);
+    }
+
+    .timer-label {
+      font-size: 14px;
+      font-weight: bold;
+      color: #ffffff;
+    }
+
+    .timer-buttons {
+      display: flex;
+      gap: 8px;
+      width: 100%;
+    }
+
+    .btn-timer {
+      flex: 1;
+      height: 32px;
+      font-size: 12px;
+      background-color: var(--color-button-bg);
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    .btn-timer:hover { background-color: #3d4073; }
+
+    .bank-card {
+      border: 1px solid var(--color-border);
+      border-radius: 6px;
+      padding: 10px;
+      display: flex;
+      flex-direction: row;
+      gap: 10px;
+      height: 290px;
+      box-sizing: border-box;
+      background-color: var(--color-input-bg);
+    }
+
+    .left-panel-tab {
+      flex: 0.45;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .right-panel-tab {
+      flex: 0.55;
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+      min-width: 0;
+    }
+
+    .panel-title {
+      font-weight: bold;
+      font-size: 12px;
+      margin: 0;
+      color: #ffffff;
+      text-transform: uppercase;
+    }
+
+    .right-panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .scroll-view {
+      flex: 1;
+      overflow-y: auto;
+      border-radius: 4px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+      background-color: var(--color-barrel-bg);
+      border: 1px solid var(--color-border);
+      padding: 4px;
+    }
+
+    .scroll-view::-webkit-scrollbar {
+      width: 4px;
+    }
+    .scroll-view::-webkit-scrollbar-thumb {
+      background: var(--color-border);
+      border-radius: 4px;
+    }
+
+    .cat-item {
+      width: 100%;
+      min-height: 28px;
+      border-radius: 4px;
+      font-size: 12px;
+      text-align: left;
+      padding-left: 8px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      background-color: #2a2a2e;
+      color: white;
+      border: none;
+      cursor: pointer;
+    }
+
+    .cat-item.active {
+      background-color: #3d4073;
+      border: 1px solid var(--color-accent-blue);
+    }
+
+    .word-row {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      min-height: 26px;
+      gap: 4px;
+      padding: 2px 6px;
+      background-color: rgba(255,255,255,0.03);
+      border-radius: 4px;
+    }
+
+    .word-label {
+      font-size: 12px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+
+    .btn-delete-word {
+      width: 20px;
+      height: 20px;
+      color: #e57373;
+      background-color: var(--color-danger);
+      border: none;
+      border-radius: 4px;
+      font-size: 10px;
+      cursor: pointer;
+    }
+
+    .btn-delete-cat {
+      background-color: var(--color-danger);
+      color: white;
+      border: none;
+      font-size: 10px;
+      padding: 2px 6px;
+      height: 20px;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+    .btn-delete-cat:hover { background-color: var(--color-danger-hover); }
+
+    .settings-input {
+      background-color: var(--color-barrel-bg);
+      color: #ffffff;
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      padding: 4px;
+      font-size: 12px;
+    }
+
+    .settings-textarea {
+      resize: none;
+      height: 42px;
+      background-color: var(--color-barrel-bg);
+      color: #ffffff;
+      border: 1px solid var(--color-border);
+      border-radius: 4px;
+      padding: 4px;
+      font-size: 12px;
+    }
+
+    .hint-text {
+      font-size: 10px;
+      color: var(--color-text-dim);
+    }
+
+    /* ==========================================================================
       RESPONSIVE GRID & ASPECT RATIO CONTROLLER
       ========================================================================= */
 
@@ -481,7 +718,6 @@
       }
 
       .card-anchor {
-        /* Pivots dynamically on the vertical height of the device screen */
         height: 100%;
         max-height: clamp(180px, 50vh, 450px); 
         width: auto;
@@ -492,7 +728,7 @@
       }
     }
 
-    /* Micro-Height Landscape Safeguard (For tiny or extremely flat mobile landscape ratios) */
+    /* Micro-Height Landscape Safeguard */
     @media (max-height: 480px) and (min-aspect-ratio: 1/1) {
       body {
         padding: 4px;
@@ -587,38 +823,75 @@
 
   <div class="popup-overlay" id="settingsPopup">
     <div class="popup-content">
-      <div class="popup-header">Customize Configuration Settings</div>
-      <div class="form-group">
-        <label style="color: var(--color-accent-orange)">Card Flips Per Round:</label>
-        <input type="number" id="input-limit" min="1">
+      <div class="tabs-container">
+        <button class="tab-btn active" id="btn-game-tab" onclick="switchTab('game-settings-tab')">Game Settings</button>
+        <button class="tab-btn" id="btn-chameleon-tab" onclick="switchTab('chameleon-settings-tab')">Chameleon Settings</button>
       </div>
-      <div class="form-group">
-        <label style="color: var(--color-accent-blue)">Words Data Pool:</label>
-        <textarea id="input-words"></textarea>
+
+      <div id="game-settings-tab" class="tab-content active">
+        <div class="popup-header">Customize Configuration Settings</div>
+        <div class="form-group">
+          <label style="color: var(--color-accent-orange)">Card Flips Per Round:</label>
+          <input type="number" id="input-limit" min="1">
+        </div>
+        <div class="form-group">
+          <label style="color: var(--color-accent-blue)">Words Data Pool:</label>
+          <textarea id="input-words"></textarea>
+        </div>
+        <div class="form-group">
+          <label style="color: var(--color-accent-green)">Action Data Pool:</label>
+          <textarea id="input-actions"></textarea>
+        </div>
+        <div class="form-group">
+          <label style="color: var(--color-accent-purple)">Categories Data Pool:</label>
+          <textarea id="input-categories"></textarea>
+        </div>
+        <div class="form-group">
+          <label style="color: var(--color-accent-orange)">Letters Data Pool:</label>
+          <textarea id="input-letters"></textarea>
+        </div>
+        <div class="form-group">
+          <label style="color: var(--color-accent-blue)">Vowels Data Pool:</label>
+          <textarea id="input-vowels"></textarea>
+        </div>
+        <div class="btn-bar">
+          <button class="btn-reset" onclick="resetDataPoolsToDefault()">Reset Defaults</button>
+        </div>
       </div>
-      <div class="form-group">
-        <label style="color: var(--color-accent-green)">Action Data Pool:</label>
-        <textarea id="input-actions"></textarea>
+
+      <div id="chameleon-settings-tab" class="tab-content">
+        <div class="popup-header">Word Bank & Discussion Settings</div>
+        
+        <div class="timer-card">
+          <div id="timer-label" class="timer-label">Discussion Time: 03:00</div>
+          <div class="timer-buttons">
+            <button class="btn-timer" onclick="adjustTimer(-30)">-30s</button>
+            <button class="btn-timer" onclick="adjustTimer(30)">+30s</button>
+          </div>
+        </div>
+
+        <div class="bank-card">
+          <div class="left-panel-tab">
+            <div class="panel-title">Categories</div>
+            <div id="categories-list" class="scroll-view"></div>
+            <input type="text" id="new-cat-input" class="settings-input" placeholder="New Cat..." onkeydown="handleCatKey(event)">
+          </div>
+
+          <div class="right-panel-tab">
+            <div class="right-panel-header">
+              <div id="words-count-label" class="panel-title">Words (0)</div>
+              <button class="btn-delete-cat" onclick="deleteSelectedCategory()">Delete Cat</button>
+            </div>
+            <div id="words-list" class="scroll-view"></div>
+            <div class="hint-text">Add Word(s) (One Per Line):</div>
+            <textarea id="bulk-words-input" class="settings-textarea" placeholder="Word1&#10;Word2..."></textarea>
+            <button class="btn-timer" style="height: 24px; width: 100%; margin-top: 2px;" onclick="addBulkWords()">Add Words</button>
+          </div>
+        </div>
       </div>
-      <div class="form-group">
-        <label style="color: var(--color-accent-purple)">Categories Data Pool:</label>
-        <textarea id="input-categories"></textarea>
-      </div>
-      <div class="form-group">
-        <label style="color: var(--color-accent-orange)">Letters Data Pool:</label>
-        <textarea id="input-letters"></textarea>
-      </div>
-      <div class="form-group">
-        <label style="color: var(--color-accent-blue)">Vowels Data Pool:</label>
-        <textarea id="input-vowels"></textarea>
-      </div>
-      <div class="form-group">
-        <label style="color: var(--color-accent-purple)">Chameleon Words Pool:</label>
-        <textarea id="input-chameleon"></textarea>
-      </div>
-      <div class="btn-bar">
+
+      <div class="btn-bar" style="border-top: 1px solid var(--color-border); padding-top: 10px; margin-top: 5px;">
         <button class="btn-cancel" onclick="closePromptEditor()">Cancel</button>
-        <button class="btn-reset" onclick="resetDataPoolsToDefault()">Reset Defaults</button>
         <button class="btn-save" onclick="saveConfigChanges()">Save Changes</button>
       </div>
     </div>
@@ -649,6 +922,24 @@
     let isHost = sessionStorage.getItem('room_isHost') === 'true';
     let roomPlayersList = JSON.parse(sessionStorage.getItem('room_playersList')) || [];
     let currentTurnOwnerId = sessionStorage.getItem('room_currentTurnOwnerId') || null;
+
+    // Chameleon Tab Integrated Memory States
+    let chameleonWordBank = {
+      "Animals": [
+        "Lion", "Elephant", "Shark", "Penguin", "Kangaroo", "Chameleon", "Eagle", "Dolphin", "Bear", "Snake",
+        "Frog", "Giraffe", "Monkey", "Wolf", "Octopus", "Horse", "Tiger", "Owl", "Fox", "Crocodile"
+      ],
+      "Food & Drink": [
+        "Pizza", "Burger", "Sushi", "Taco", "Ice Cream", "Coffee", "Chocolate", "Cheese", "Pasta", "Apple",
+        "Bacon", "Salad", "Pancake", "Donut", "Steak", "Popcorn", "Smoothie", "Soup", "Fries", "Watermelon"
+      ],
+      "Occupations": [
+        "Doctor", "Firefighter", "Astronaut", "Teacher", "Chef", "Detective", "Artist", "Pilot", "Scientist", "Farmer",
+        "Lawyer", "Actor", "Musician", "Vet", "Builder", "Nurse", "Photographer", "Journalist", "Coach", "Mechanic"
+      ]
+    };
+    let chameleonSelectedCategory = "Animals";
+    let chameleonTimerDuration = 180;
 
     // Dynamically synchronize player count if returning to a stored session
     if (activeRoomCode) {
@@ -683,9 +974,7 @@
     mqttClient.on('message', (topic, payload) => {
       try {
         const msg = JSON.parse(payload.toString());
-        // Ignore echo messages broadcast by our own device
         if (msg.senderId === localPlayerId) return;
-
         handleIncomingNetworkMessage(msg);
       } catch (e) {
         console.error("Error decoding message:", e);
@@ -703,7 +992,7 @@
 
     function sendNetworkMessage(msg) {
       if (!activeRoomCode || !currentMqttTopic) return;
-      msg.senderId = localPlayerId; // Attach sender footprint 
+      msg.senderId = localPlayerId; 
       mqttClient.publish(currentMqttTopic, JSON.stringify(msg));
     }
 
@@ -806,30 +1095,7 @@
         "Playing the drums", "Combing long tangled hair", "Walking through a haunted house", "Painting a masterpiece", 
         "Singing in the shower", "Trying on a tight pair of jeans", "Building a tall card tower", "Dancing the tango", 
         "Wrapping a birthday present", "Changing a flat car tire", "Threading a very small needle", "Doing the moonwalk", 
-        "Playing a game of tennis", "Walking on a windy beach",
-        "Squeezing fresh orange juice", "Assembling a tricky Lego set", "Walking on hot pavement", "Trying on a pair of wet socks",
-        "Scrubbing a dirty frying pan", "Wrapping up in a warm blanket", "Climbing up a rope ladder", "Petting a fluffy cat",
-        "Riding a unicycle", "Catching a falling glass", "Whistling a happy tune", "Sifting through dry sand",
-        "Opening a giant umbrella in the wind", "Fanning yourself on a hot day", "Stamping a stack of envelopes", "Testing a mattress by jumping",
-        "Walking through a thick fog", "Carrying a giant stack of books", "Plucking petals off a daisy", "Arranging a bouquet of flowers",
-        "Testing the temperature of a baby bottle", "Untangling a ball of yarn", "Sticking a key into a rusted lock", "Hula hooping",
-        "Flipping a pancake in a pan", "Shaking hands with a politician", "Polishing a dusty wooden table", "Peeling a stubborn banana",
-        "Throwing a paper airplane", "Tiptoeing through a quiet library", "Stretching a massive rubber band", "Digging a hole on the beach",
-        "Scraping ice off a car windshield", "Pouring hot tea into a teacup", "Wiping fog off a bathroom mirror", "Stepping on a crunchy autumn leaf",
-        "Opening a creaky old door", "Splashing in a shallow puddle", "Crying during a sad movie", "Peeking through a keyhole",
-        "Stretching dough to make pizza", "Flinging a frisbee to a dog", "Walking with a book balanced on your head", "Putting on a virtual reality headset",
-        "Peeling a boiled egg", "Cracking a nut with a nutcracker", "Snapping your fingers to music", "Sticking a magnet on a fridge",
-        "Slicing a giant watermelon", "Hammering a nail into a wall", "Playing a dramatic organ chord", "Washing your hands with bubbly soap",
-        "Wrapping a cozy scarf around your neck", "Applying sunscreen to your nose", "Popping a piece of bubblegum", "Trying to read tiny font",
-        "Folding a fitted bed sheet", "Adjusting a pair of sliding glasses", "Carrying a tray of drinks through a crowd", "Pruning a thorny rose bush",
-        "Skipping a stone across a lake", "Unlocking your phone with facial recognition", "Peeking at a hidden gift", "Eating a massive messy taco",
-        "Sweeping dust into a dustpan", "Kneading a thick ball of bread dough", "Spinning a basketball on your finger", "Plucking a single gray hair",
-        "Stepping into a freezing cold pool", "Sticking your hand into a dark bag", "Blowing bubbles through a wand", "Peeling off a dried sticker",
-        "Unzipping a stuck sleeping bag zipper", "Polishing a pair of leather shoes", "Placing the final piece in a puzzle", "Checking your watch repeatedly",
-        "Watering a hanging plant", "Opening a massive map on a windy day", "Trying to light a match in the wind", "Sinking into a comfortable beanbag",
-        "Shaking a can of soda", "Squeezing a plush teddy bear", "Checking your reflection in a shop window", "Drawing a perfect circle on a board",
-        "Rolling a heavy bowling ball", "Tucking in a messy bedsheet", "Stirring a thick pot of oatmeal", "Sticking a pin into a giant map",
-        "Trying to balance a broom on your hand", "Catching a shiny firefly"
+        "Playing a game of tennis", "Walking on a windy beach"
       ],
       "categories": [
         "A Boy's Name", "A Girl's Name", "Animals", "Things That Are Cold", 
@@ -861,89 +1127,12 @@
         "Things Made of Metal", "Things Found in a Forest", "Websites/Apps", 
         "Things with Spots", "Things That Use Batteries", "College Majors", 
         "Things in a Living Room", "Things That Make Noise", "Famous Duos", 
-        "Things You Do Before Bed",
-        "Rivers", "Things That Are Red", "Items on a Teacher's Desk", "Board Games",
-        "Things in a Bakery", "Fears/Phobias", "Things That Are Long", "Vegetables",
-        "Nouns Ending in -ING", "Types of Trees", "Things That Are Yellow", "Monsters in Movies",
-        "Things That Make You Sneeze", "Things Found in a Library", "Video Games", "Things in an Attic",
-        "Things with Stripes", "Types of Weather", "Famous Scientists", "Items in a Baby's Room",
-        "Things Found on a Map", "Snack Foods", "Things Found in a Castle", "Things That Are Blue",
-        "Modes of Transportation", "Famous Landmarks", "Things Found in a Hotel Room", "Types of Fabrics",
-        "Things with Screens", "Parts of the Body", "Things in a Tool Shed", "Things That Are Purple",
-        "Languages", "Things Found in a Park", "Constellations", "Things That Are Loud",
-        "Things You Find in a Wallet", "Things That Are Hard", "Types of Cheese", "Hobbies You Do Outside",
-        "Things Made of Plastic", "Things You Do on the Weekend", "Superheroes", "Words with 5 Letters",
-        "Things with Handles", "Things That Are White", "Mythological Creatures", "Items Found in a Laundry Room",
-        "Types of Shoes", "Things That Grow on Vines", "Words That Rhyme with 'Blue'", "Things Found at a Wedding",
-        "Things That Are Square", "Things You See at a Concert", "Office Supplies", "Things in a Dining Room",
-        "Types of Houses", "Things Made of Wood", "Things in a Camping Tent", "Things That Smell Good",
-        "Things You Throw Away", "Words with 3 Letters", "Things You Pack for the Beach", "Famous Painters",
-        "Things Found at a Petrol Station", "Things in a Science Lab", "Types of Soup", "Things You Wear on Your Head",
-        "Things That Are Slow", "Things with Zipper", "Things You Do in the Morning", "Dog Breeds",
-        "Things with Keys", "Things That Are Orange", "Items in a Sewing Kit", "Things You Keep in a Safe",
-        "Things Found at a Construction Site", "Types of Nuts", "Things Found in a Cave", "Things That Sparkle",
-        "Things on a Dinner Table", "Things with Wings", "Types of Birds", "Things Made of Glass",
-        "Things That Are Black", "Items in a First Aid Kit", "Things You See in the Suburbs", "Things that Float",
-        "Things You Do in the Summer", "Things with Plugs", "Things That Are Clean", "Words That Describe Weather",
-        "Things in a Movie Theater", "Things You Might Lose", "Ice Cream Sauces", "Things That Are Fast",
-        "Things Found in a Dentist's Office", "Things That Run on Gasoline", "Types of Pasta", "Things in a Closet"
+        "Things You Do Before Bed"
       ],
       letters: ["A", "B", "C", "D", "E", "F", "G", "H", "I", "J", "K", "L", "M", "N", "O", "P", "Q", "R", "S", "T", "U", "V", "W", "X", "Y", "Z"],
-      vowels: ["A", "E", "I", "O", "U", "Y"],
-      chameleon: ["Astronaut (Space, Rocket, Moon, Suit, NASA)", "Apple (Fruit, Red, Tree, Crisp, Pie)", 
-        "Airplane (Fly, Sky, Airport, Wings, Pilot)", "Alien (Space, UFO, Green, Planet, Martian)", 
-        "Anchor (Ship, Boat, Sea, Heavy, Water)", "Backpack (School, Bag, Straps, Books, Carry)", 
-        "Bicycle (Wheels, Pedals, Ride, Helmet, Chain)", "Blender (Kitchen, Smoothie, Mix, Fruit, Ice)", 
-        "Bear (Woods, Forest, Hibernate, Teddy, Animal)", "Banana (Fruit, Yellow, Peel, Monkey, Bunch)", 
-        "Cactus (Desert, Prickly, Plant, Green, Needle)", "Camera (Photo, Picture, Lens, Flash, Shoot)", 
-        "Castle (King, Queen, Palace, Stone, Old)", "Cat (Meow, Pet, Kitten, Purr, Feline)", 
-        "Chef (Cook, Food, Restaurant, Kitchen, Meal)", "Dolphin (Ocean, Swim, Sea, Mammal, Flippers)", 
-        "Diamond (Ring, Jewel, Gem, Expensive, Sparkle)", "Dragon (Fire, Wings, Scale, Myth, Monster)", 
-        "Doctor (Hospital, Sick, Medicine, Health, Nurse)", "Donut (Sweet, Hole, Breakfast, Glazed, Pastry)", 
-        "Elephant (Trunk, Big, Gray, Tusk, Africa)", "Eagle (Bird, Fly, Sky, Wings, American)", 
-        "Egg (Breakfast, Chicken, Shell, Yolk, White)", "Eiffel Tower (Paris, France, Europe, Monument, Tall)", 
-        "Escalator (Stairs, Moving, Mall, Up, Down)", "Firefighter (Truck, Water, Fire, Hose, Red)", 
-        "Frog (Jump, Green, Toad, Pond, Hop)", "Flamingo (Pink, Bird, Leg, Water, Stand)", 
-        "Guitar (Strings, Instrument, Music, Play, Acoustic)", "Gorilla (Ape, Jungle, Monkey, Large, Animal)", 
-        "Gumball (Machine, Candy, Chew, Round, Bubble)", "Hammer (Nail, Tool, Hit, Pound, Construction)", 
-        "Helicopter (Fly, Blades, Rotor, Sky, Chopper)", "Hotdog (Bun, Mustard, Sausage, BBQ, Meat)", 
-        "Iceberg (Cold, Ocean, Ship, Glacier, Water)", "Kangaroo (Jump, Pouch, Australia, Hop, Animal)", 
-        "Koala (Bear, Tree, Australia, Eucalyptus, Sleep)", "Kite (Wind, Fly, Sky, String, Tail)", 
-        "Lion (King, Jungle, Roar, Cat, Mane)", "Lantern (Light, Lamp, Camping, Dark, Flame)", 
-        "Magnet (Metal, Pull, Attract, Iron, Pole)", "Monkey (Banana, Tree, Swing, Tail, Primate)", 
-        "Microphone (Sing, Voice, Sound, Stage, Speak)", "Ninja (Black, Stealth, Sword, Japan, Shadow)", 
-        "Octopus (Ocean, Tentacles, Sea, Eight, Ink)", "Owl (Bird, Night, Hoot, Wise, Fly)", 
-        "Penguin (Ice, Bird, Fly, Antarctica, Tuxedo)", "Pancake (Breakfast, Syrup, Butter, Plate, Stack)", 
-        "Pirate (Ship, Ocean, Treasure, Map, Hook)", "Pumpkin (Halloween, Orange, Carve, Pie, Autumn)", 
-        "Pizza (Cheese, Sauce, Slice, Pepperoni, Italian)", "Popcorn (Movie, Theater, Butter, Salt, Kernel)", 
-        "Parrot (Bird, Talk, Pet, Feathers, Cage)", "Pencil (Write, Erase, Lead, Yellow, School)", 
-        "Piano (Keys, Instrument, Music, Black, White)", "Rabbit (Bunny, Ears, Hop, Carrot, Pet)", 
-        "Rainbow (Sky, Rain, Colors, Red, Sun)", "Robot (Metal, Machine, Computer, AI, Future)", 
-        "Rocket (Space, Astronaut, Fly, Launch, Moon)", "Submarine (Underwater, Ocean, Deep, Boat, Sunk)", 
-        "Sandwich (Bread, Lunch, Eat, Ham, Cheese)", "Scuba (Dive, Ocean, Tank, Swim, Mask)", 
-        "Shark (Ocean, Teeth, Fish, Bite, Swim)", "Skateboard (Wheels, Board, Deck, Trick, Ride)", 
-        "Snowman (Winter, Cold, Carrot, Snow, Frosty)", "Spider (Web, Eight, Legs, Insect, Bug)", 
-        "Statue of Liberty (New York, America, Torch, Green, Monument)", "Strawberry (Fruit, Red, Berry, Sweet, Seed)", 
-        "Sunglasses (Eyes, Sun, Summer, Glasses, Shade)", "Sunscreen (Beach, Burn, Lotion, Summer, Protection)", 
-        "Sushi (Fish, Rice, Seaweed, Roll, Japanese)", "Taco (Shell, Meat, Mexican, Crunch, Lettuce)", 
-        "Teapot (Hot, Drink, Cup, Leaves, Kettle)", "Telephone (Call, Ring, Phone, Cell, Speak)", 
-        "Telescope (Stars, Space, Moon, Sky, Look)", "Television (Screen, Show, Watch, Remote, Movie)", 
-        "Tennis (Racket, Ball, Net, Court, Hit)", "Tiger (Stripes, Cat, Jungle, Orange, Roar)", 
-        "Toaster (Bread, Breakfast, Kitchen, Heat, Slice)", "Tornado (Wind, Storm, Twister, Weather, Funnel)", 
-        "Tractor (Farm, Field, Big, Wheels, Green)", "Train (Track, Station, Rails, Locomotive, Engine)", 
-        "Treasure (Chest, Gold, Pirate, Map, Hidden)", "Tree (Leaf, Green, Wood, Branch, Forest)", 
-        "Trophy (Win, Award, Gold, Prize, Cup)", "Truck (Big, Drive, Cargo, Wheels, Pickup)", 
-        "Turtle (Shell, Slow, Reptile, Beach, Green)", "Umbrella (Rain, Wet, Storm, Open, Weather)", 
-        "Unicorn (Horn, Magic, Horse, Myth, Rainbow)", "Vampire (Blood, Count, Dracula, Teeth, Bat)", 
-        "Volcano (Lava, Mountain, Erupt, Ash, Rock)", "Waffle (Breakfast, Syrup, Grid, Iron, Eggo)", 
-        "Wallet (Money, Cash, Cards, Pocket, Leather)", "Watermelon (Fruit, Summer, Green, Red, Seeds)", 
-        "Windmill (Wind, Energy, Blades, Farm, Power)", "Wizard (Magic, Wand, Spell, Hat, Harry Potter)", 
-        "Wolf (Pack, Dog, Howl, Moon, Forest)", "Xylophone (Instrument, Music, Mallet, Keys, Play)", 
-        "Zebra (Stripes, Animal, Black, White, Horse)", "Zoo (Animals, Cages, See, Wild, Elephant)"
-      ]
+      vowels: ["A", "E", "I", "O", "U", "Y"]
     };
 
-    // Deep copy default pools into the active state variable
     let gameDataPools = JSON.parse(JSON.stringify(DEFAULT_GAME_DATA_POOLS));
 
     class WebBarrelSpinner {
@@ -1009,7 +1198,7 @@
             ctx.textBaseline = 'middle';
 
             let displayString = options[itemIndex];
-            const padding = 24; // Safety margin for boundaries
+            const padding = 24; 
             const maxWidth = w - padding;
 
             ctx.font = isCurrentSelected ? `bold 16px Roboto` : `13px Roboto`;
@@ -1035,13 +1224,11 @@
         if (this.isSpinning || !gameDataPools[this.type].length) return;
         this.isSpinning = true;
 
-        // Use custom speed if passed from network trigger; otherwise generate random
         this.speed = customSpeed !== null ? customSpeed : (Math.random() * 20 + 30); 
 
         spinSound.currentTime = 0;
         spinSound.play().catch(e => console.log(e));
 
-        // If local turn-owner initiated a public spin, broadcast it immediately to others
         if (customSpeed === null && activeRoomCode && this.type !== 'words' && this.type !== 'actions') {
           sendNetworkMessage({
             type: 'SPIN_TRIGGER',
@@ -1060,7 +1247,6 @@
           this.yOffset += this.speed;
           this.speed *= 0.965; 
           this.redraw();
-          // REMOVED high-frequency broadcastGameState() here to avoid network lag
           requestAnimationFrame(() => this.animate());
         } else {
           const remainder = this.yOffset % this.rowHeight;
@@ -1083,7 +1269,6 @@
             document.getElementById('outputLabel').innerText = `${this.type.toUpperCase()}: ${this.winningValue}`;
           }
 
-          // Broadcast the final synced game state once the spin animation completes
           if (checkMyTurn()) {
             broadcastGameState();
           }
@@ -1211,7 +1396,6 @@
       }, 50);
     }
 
-    /* --- Cross-Tab/Device Networking Synchronization Handlers --- */
     function openRoomPopup() {
       renderRoomModalUI();
       document.getElementById('roomPopup').classList.add('active');
@@ -1380,7 +1564,9 @@
           players: roomPlayersList,
           currentTurnOwner: currentTurnOwnerId,
           flipsTargetLimit: flipsTargetLimit,
-          gameDataPools: gameDataPools
+          gameDataPools: gameDataPools,
+          chameleonWordBank: chameleonWordBank,
+          chameleonTimerDuration: chameleonTimerDuration
         });
         broadcastGameState();
       }
@@ -1395,6 +1581,8 @@
           gameDataPools = msg.gameDataPools;
           localStorage.setItem('shared_game_data_pools', JSON.stringify(gameDataPools));
         }
+        if (msg.chameleonWordBank) chameleonWordBank = msg.chameleonWordBank;
+        if (msg.chameleonTimerDuration) chameleonTimerDuration = msg.chameleonTimerDuration;
 
         saveRoomState();
         renderRoomModalUI();
@@ -1409,12 +1597,11 @@
         evaluateTurnControls();
       }
 
-      // Handle the trigger to spin local canvases when another player initiates a spin
       if (msg.type === 'SPIN_TRIGGER' && msg.roomCode === activeRoomCode) {
         const targetSpinner = spinners[msg.spinnerType];
         if (targetSpinner) {
-          targetSpinner.yOffset = msg.initialOffset; // Sync base position
-          targetSpinner.spin(msg.speed);             // Kick off animation with synchronized velocity
+          targetSpinner.yOffset = msg.initialOffset; 
+          targetSpinner.spin(msg.speed);             
         }
       }
 
@@ -1428,7 +1615,6 @@
         spinners.letters.winningValue = msg.lettersValue;
         spinners.vowels.winningValue = msg.vowelsValue;
 
-        // Only enforce exact static offsets if the spinners are not already in their animation routines
         if (!spinners.categories.isSpinning && msg.categoriesOffset !== undefined) spinners.categories.yOffset = msg.categoriesOffset;
         if (!spinners.letters.isSpinning && msg.lettersOffset !== undefined) spinners.letters.yOffset = msg.lettersOffset;
         if (!spinners.vowels.isSpinning && msg.vowelsOffset !== undefined) spinners.vowels.yOffset = msg.vowelsOffset;
@@ -1441,6 +1627,8 @@
       if (msg.type === 'SETTINGS_UPDATE' && msg.roomCode === activeRoomCode) {
         flipsTargetLimit = msg.flipsTargetLimit;
         gameDataPools = msg.gameDataPools;
+        if(msg.chameleonWordBank) chameleonWordBank = msg.chameleonWordBank;
+        if(msg.chameleonTimerDuration) chameleonTimerDuration = msg.chameleonTimerDuration;
         localStorage.setItem('shared_game_data_pools', JSON.stringify(gameDataPools));
 
         Object.keys(spinners).forEach(k => {
@@ -1490,16 +1678,140 @@
       location.reload(); 
     }
 
+    // --- INTEGRATED TAB VIEW SWITCH CONTROLLER ---
+    function switchTab(tabId) {
+      document.querySelectorAll('.tab-content').forEach(el => el.classList.remove('active'));
+      document.querySelectorAll('.tab-btn').forEach(el => el.classList.remove('active'));
+
+      document.getElementById(tabId).classList.add('active');
+      if (tabId === 'game-settings-tab') {
+        document.getElementById('btn-game-tab').classList.add('active');
+      } else {
+        document.getElementById('btn-chameleon-tab').classList.add('active');
+        updateChameleonUI(); 
+      }
+    }
+
+    // --- CHAMELEON INTERACTIVE CONTROL LOGIC ---
+    function updateChameleonUI() {
+      renderTimer();
+      renderCategories();
+      renderWords();
+    }
+
+    function renderTimer() {
+      const minutes = Math.floor(chameleonTimerDuration / 60);
+      const seconds = chameleonTimerDuration % 60;
+      document.getElementById('timer-label').innerText = `Discussion Time: ${String(minutes).padStart(2, '0')}:${String(seconds).padStart(2, '0')}`;
+    }
+
+    function adjustTimer(amount) {
+      const newDuration = chameleonTimerDuration + amount;
+      if (newDuration >= 30 && newDuration <= 600) {
+        chameleonTimerDuration = newDuration;
+        renderTimer();
+      }
+    }
+
+    function renderCategories() {
+      const container = document.getElementById('categories-list');
+      container.innerHTML = '';
+      Object.keys(chameleonWordBank).forEach(cat => {
+        const btn = document.createElement('button');
+        btn.className = `cat-item ${cat === chameleonSelectedCategory ? 'active' : ''}`;
+        btn.innerText = cat;
+        btn.onclick = () => {
+          chameleonSelectedCategory = cat;
+          updateChameleonUI();
+        };
+        container.appendChild(btn);
+      });
+    }
+
+    function renderWords() {
+      const container = document.getElementById('words-list');
+      container.innerHTML = '';
+      const label = document.getElementById('words-count-label');
+
+      if (!chameleonSelectedCategory || !chameleonWordBank[chameleonSelectedCategory]) {
+        label.innerText = "Words (0)";
+        return;
+      }
+
+      const words = chameleonWordBank[chameleonSelectedCategory];
+      label.innerText = `Words (${words.length})`;
+
+      words.forEach((word, index) => {
+        const row = document.createElement('div');
+        row.className = 'word-row';
+
+        const textSpan = document.createElement('span');
+        textSpan.className = 'word-label';
+        textSpan.innerText = word;
+
+        const delBtn = document.createElement('button');
+        delBtn.className = 'btn-delete-word';
+        delBtn.innerText = 'X';
+        delBtn.onclick = () => {
+          chameleonWordBank[chameleonSelectedCategory].splice(index, 1);
+          updateChameleonUI();
+        };
+
+        row.appendChild(textSpan);
+        row.appendChild(delBtn);
+        container.appendChild(row);
+      });
+    }
+
+    function handleCatKey(e) {
+      if (e.key === 'Enter') {
+        const input = document.getElementById('new-cat-input');
+        const title = input.value.trim();
+        if (title && !chameleonWordBank[title]) {
+          chameleonWordBank[title] = [];
+          chameleonSelectedCategory = title;
+          input.value = '';
+          updateChameleonUI();
+        }
+      }
+    }
+
+    function deleteSelectedCategory() {
+      if (chameleonSelectedCategory && chameleonWordBank[chameleonSelectedCategory]) {
+        delete chameleonWordBank[chameleonSelectedCategory];
+        const keys = Object.keys(chameleonWordBank);
+        chameleonSelectedCategory = keys.length > 0 ? keys[0] : null;
+        updateChameleonUI();
+      }
+    }
+
+    function addBulkWords() {
+      if (!chameleonSelectedCategory || !chameleonWordBank[chameleonSelectedCategory]) return;
+      const textarea = document.getElementById('bulk-words-input');
+      const lines = textarea.value.split('\n');
+      lines.forEach(line => {
+        const clean = line.trim();
+        if (clean && !chameleonWordBank[chameleonSelectedCategory].includes(clean)) {
+          chameleonWordBank[chameleonSelectedCategory].push(clean);
+        }
+      });
+      textarea.value = '';
+      updateChameleonUI();
+    }
+
+    // --- WINDOW EDITOR HANDLERS ---
     function openPromptEditor() {
       if (activeRoomCode && !isHost) return;
       
+      switchTab('game-settings-tab'); // Reset focus to Tab 1 on open
+
       document.getElementById('input-limit').value = flipsTargetLimit;
       document.getElementById('input-words').value = gameDataPools.words.join('\n');
       document.getElementById('input-actions').value = gameDataPools.actions.join('\n');
       document.getElementById('input-categories').value = gameDataPools.categories.join('\n');
       document.getElementById('input-letters').value = gameDataPools.letters.join('\n');
       document.getElementById('input-vowels').value = gameDataPools.vowels.join('\n');
-      document.getElementById('input-chameleon').value = gameDataPools.chameleon.join('\n');
+      
       document.getElementById('settingsPopup').classList.add('active');
     }
 
@@ -1508,13 +1820,12 @@
     }
 
     function resetDataPoolsToDefault() {
-      if (confirm("Are you sure you want to restore all data fields to their code defaults? (You will still need to click 'Save Changes' to apply)")) {
+      if (confirm("Restore all fields to defaults? (Click 'Save Changes' to permanently apply)")) {
         document.getElementById('input-words').value = DEFAULT_GAME_DATA_POOLS.words.join('\n');
         document.getElementById('input-actions').value = DEFAULT_GAME_DATA_POOLS.actions.join('\n');
         document.getElementById('input-categories').value = DEFAULT_GAME_DATA_POOLS.categories.join('\n');
         document.getElementById('input-letters').value = DEFAULT_GAME_DATA_POOLS.letters.join('\n');
         document.getElementById('input-vowels').value = DEFAULT_GAME_DATA_POOLS.vowels.join('\n');
-        document.getElementById('input-chameleon').value = DEFAULT_GAME_DATA_POOLS.chameleon.join('\n');
       }
     }
 
@@ -1533,9 +1844,10 @@
       gameDataPools.categories = parseLines('input-categories');
       gameDataPools.letters = parseLines('input-letters');
       gameDataPools.vowels = parseLines('input-vowels');
-      gameDataPools.chameleon = parseLines('input-chameleon'); 
 
       localStorage.setItem('shared_game_data_pools', JSON.stringify(gameDataPools));
+      localStorage.setItem('chameleon_word_bank', JSON.stringify(chameleonWordBank));
+      localStorage.setItem('chameleon_timer_duration', chameleonTimerDuration.toString());
 
       Object.keys(spinners).forEach(k => {
         if (spinners[k]) {
@@ -1552,7 +1864,9 @@
           type: 'SETTINGS_UPDATE',
           roomCode: activeRoomCode,
           flipsTargetLimit: flipsTargetLimit,
-          gameDataPools: gameDataPools
+          gameDataPools: gameDataPools,
+          chameleonWordBank: chameleonWordBank,
+          chameleonTimerDuration: chameleonTimerDuration
         });
       }
       
@@ -1567,6 +1881,22 @@
       } catch (e) {
         console.error("Failed to parse shared game pools:", e);
       }
+    }
+
+    // Load existing Chameleon configurations if they exist
+    if (localStorage.getItem('chameleon_word_bank')) {
+      try {
+        chameleonWordBank = JSON.parse(localStorage.getItem('chameleon_word_bank'));
+        const keys = Object.keys(chameleonWordBank);
+        if (keys.length > 0 && !keys.includes(chameleonSelectedCategory)) {
+          chameleonSelectedCategory = keys[0];
+        }
+      } catch (e) {
+        console.error("Failed to parse local Chameleon word bank:", e);
+      }
+    }
+    if (localStorage.getItem('chameleon_timer_duration')) {
+      chameleonTimerDuration = parseInt(localStorage.getItem('chameleon_timer_duration')) || 180;
     }
 
     evaluateTurnControls();
