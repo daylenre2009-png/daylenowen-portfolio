@@ -404,6 +404,7 @@
 
     .btn-save { background-color: var(--color-button-bg); color: white; }
     .btn-cancel { background-color: var(--color-border); color: white; }
+    .btn-reset { background-color: #ef4444; color: white; }
 
     /* Dropdowns */
     .dropdown {
@@ -617,6 +618,7 @@
       </div>
       <div class="btn-bar">
         <button class="btn-cancel" onclick="closePromptEditor()">Cancel</button>
+        <button class="btn-reset" onclick="resetDataPoolsToDefault()">Reset Defaults</button>
         <button class="btn-save" onclick="saveConfigChanges()">Save Changes</button>
       </div>
     </div>
@@ -728,7 +730,7 @@
       }
     });
 
-    let gameDataPools = {
+    const DEFAULT_GAME_DATA_POOLS = {
       words: [
         "Astronaut (Space, Rocket, Moon, Suit, NASA)", "Apple (Fruit, Red, Tree, Crisp, Pie)", 
         "Airplane (Fly, Sky, Airport, Wings, Pilot)", "Alien (Space, UFO, Green, Planet, Martian)", 
@@ -937,8 +939,12 @@
         "Wallet (Money, Cash, Cards, Pocket, Leather)", "Watermelon (Fruit, Summer, Green, Red, Seeds)", 
         "Windmill (Wind, Energy, Blades, Farm, Power)", "Wizard (Magic, Wand, Spell, Hat, Harry Potter)", 
         "Wolf (Pack, Dog, Howl, Moon, Forest)", "Xylophone (Instrument, Music, Mallet, Keys, Play)", 
-        "Zebra (Stripes, Animal, Black, White, Horse)", "Zoo (Animals, Cages, See, Wild, Elephant)"]
+        "Zebra (Stripes, Animal, Black, White, Horse)", "Zoo (Animals, Cages, See, Wild, Elephant)"
+      ]
     };
+
+    // Deep copy default pools into the active state variable
+    let gameDataPools = JSON.parse(JSON.stringify(DEFAULT_GAME_DATA_POOLS));
 
     class WebBarrelSpinner {
       constructor(type, accentColor) {
@@ -1499,6 +1505,17 @@
 
     function closePromptEditor() {
       document.getElementById('settingsPopup').classList.remove('active');
+    }
+
+    function resetDataPoolsToDefault() {
+      if (confirm("Are you sure you want to restore all data fields to their code defaults? (You will still need to click 'Save Changes' to apply)")) {
+        document.getElementById('input-words').value = DEFAULT_GAME_DATA_POOLS.words.join('\n');
+        document.getElementById('input-actions').value = DEFAULT_GAME_DATA_POOLS.actions.join('\n');
+        document.getElementById('input-categories').value = DEFAULT_GAME_DATA_POOLS.categories.join('\n');
+        document.getElementById('input-letters').value = DEFAULT_GAME_DATA_POOLS.letters.join('\n');
+        document.getElementById('input-vowels').value = DEFAULT_GAME_DATA_POOLS.vowels.join('\n');
+        document.getElementById('input-chameleon').value = DEFAULT_GAME_DATA_POOLS.chameleon.join('\n');
+      }
     }
 
     function saveConfigChanges() {
