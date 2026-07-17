@@ -677,7 +677,7 @@
       color: #ffffff;
       border: 1px solid var(--color-border);
       border-radius: 4px;
-      padding: 4px;
+      padding: 6px;
       font-size: 12px;
     }
 
@@ -957,6 +957,15 @@
         sessionStorage.removeItem('room_isHost');
         sessionStorage.removeItem('room_playersList');
         sessionStorage.removeItem('room_currentTurnOwnerId');
+      }
+    }
+
+    // Update locally entered Player ID
+    function updateLocalPlayerId(newName) {
+      const cleanName = newName.trim();
+      if (cleanName) {
+        localPlayerId = cleanName;
+        sessionStorage.setItem('room_localPlayerId', localPlayerId);
       }
     }
 
@@ -1410,7 +1419,10 @@
       if (!activeRoomCode) {
         container.innerHTML = `
           <div class="popup-header">Multiplayer Room Management</div>
-          <p style="font-size:12px; color:var(--color-text-dim); text-align:center;">Your ID: <b>${localPlayerId}</b></p>
+          <div class="form-group" style="margin-bottom:12px;">
+            <label style="text-align:center; font-size:12px; color:var(--color-text-dim);">Your Name / Player ID:</label>
+            <input type="text" id="playerNameSetupInput" class="settings-input" style="text-align:center; font-weight:bold; font-size:14px;" value="${localPlayerId}" oninput="updateLocalPlayerId(this.value)">
+          </div>
           <div class="btn-bar" style="margin-top:10px;">
             <button class="btn-save" onclick="networkCreateRoom()">Create Room</button>
             <button class="btn-save" style="background-color:var(--color-accent-purple);" onclick="renderJoinInputUI()">Join Room</button>
